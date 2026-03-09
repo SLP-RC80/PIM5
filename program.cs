@@ -1,11 +1,4 @@
-using PIMEventosTI;
 using PIMEventosTI.Services;
-
-if (args.Length > 0 && args[0] == "console")
-{
-    ProgramConsole.RunConsole();
-    return;
-}
 
 var builder = WebApplication.CreateBuilder(args);
 
