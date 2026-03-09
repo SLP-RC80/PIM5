@@ -42,7 +42,7 @@ namespace PIMEventosTI
                         break;
 
                     case "2":
-                        eventoService.ListarEventos();
+                        ListarEventos();
                         break;
 
                     case "3":
@@ -54,7 +54,7 @@ namespace PIMEventosTI
                         break;
 
                     case "5":
-                        inscricaoService.ListarInscricoes();
+                        ListarInscricoes();
                         break;
 
                     case "6":
@@ -74,35 +74,48 @@ namespace PIMEventosTI
 
         static void CadastrarEvento()
         {
-            Console.Write("Título do evento: ");
-            string titulo = Console.ReadLine();
+            Console.Write("Nome do evento: ");
+            string nome = Console.ReadLine() ?? "";
 
-            Console.Write("Descrição: ");
-            string descricao = Console.ReadLine();
+            Console.Write("Data de início (dd/mm/aaaa): ");
+            DateTime inicio = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString());
 
-            Console.Write("Local: ");
-            string local = Console.ReadLine();
+            Console.Write("Data de fim (dd/mm/aaaa): ");
+            DateTime fim = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString());
 
-            Console.Write("Data (dd/mm/aaaa): ");
-            DateTime data = DateTime.Parse(Console.ReadLine());
-
-            Evento evento = new Evento(titulo, descricao, data, local);
-
+            Evento evento = new Evento(eventoService.NextId(), nome, inicio, fim);
             eventoService.CriarEvento(evento);
 
             Console.WriteLine("Evento cadastrado com sucesso.");
         }
 
+        static void ListarEventos()
+        {
+            Console.WriteLine("\nLista de Eventos:");
+            var eventos = eventoService.ObterEventos();
+            if (eventos.Count == 0)
+            {
+                Console.WriteLine("Nenhum evento cadastrado.");
+                return;
+            }
+            foreach (var e in eventos)
+            {
+                Console.WriteLine($"{e.Id} - {e.Nome} ({e.DataInicio:dd/MM/yyyy} - {e.DataFim:dd/MM/yyyy})");
+            }
+        }
+
         static void CadastrarParticipante()
         {
             Console.Write("Nome do participante: ");
-            string nome = Console.ReadLine();
+            string nome = Console.ReadLine() ?? "";
 
             Console.Write("Email: ");
-            string email = Console.ReadLine();
+            string email = Console.ReadLine() ?? "";
 
-            Participante participante = new Participante(nome, email);
+            Console.Write("Instituição: ");
+            string instituicao = Console.ReadLine() ?? "";
 
+            Participante participante = new Participante(participantes.Count + 1, nome, email, instituicao);
             participantes.Add(participante);
 
             Console.WriteLine("Participante cadastrado.");
@@ -122,46 +135,69 @@ namespace PIMEventosTI
                 Console.WriteLine($"{i} - {participantes[i].Nome}");
             }
 
-            int pIndex = int.Parse(Console.ReadLine());
+            int pIndex = int.Parse(Console.ReadLine() ?? "0");
 
-            Console.WriteLine("Escolha um evento:");
             var eventos = eventoService.ObterEventos();
-
-            for (int i = 0; i < eventos.Count; i++)
+            if (eventos.Count == 0)
             {
-                Console.WriteLine($"{i} - {eventos[i].Titulo}");
+                Console.WriteLine("Nenhum evento cadastrado.");
+                return;
             }
 
-            int eIndex = int.Parse(Console.ReadLine());
+            Console.WriteLine("Escolha um evento:");
+            for (int i = 0; i < eventos.Count; i++)
+            {
+                Console.WriteLine($"{i} - {eventos[i].Nome}");
+            }
+
+            int eIndex = int.Parse(Console.ReadLine() ?? "0");
 
             inscricaoService.RegistrarInscricao(participantes[pIndex], eventos[eIndex]);
-
             Console.WriteLine("Inscrição realizada.");
+        }
+
+        static void ListarInscricoes()
+        {
+            Console.WriteLine("\nLista de Inscrições:");
+            var inscricoes = inscricaoService.ObterInscricoes();
+            if (inscricoes.Count == 0)
+            {
+                Console.WriteLine("Nenhuma inscrição realizada.");
+                return;
+            }
+            foreach (var i in inscricoes)
+            {
+                Console.WriteLine($"{i.Participante.Nome} inscrito em {i.Evento.Nome}");
+            }
         }
 
         static void GerarCertificado()
         {
-            Console.WriteLine("Escolha um participante:");
+            if (participantes.Count == 0)
+            {
+                Console.WriteLine("Nenhum participante cadastrado.");
+                return;
+            }
 
+            Console.WriteLine("Escolha um participante:");
             for (int i = 0; i < participantes.Count; i++)
             {
                 Console.WriteLine($"{i} - {participantes[i].Nome}");
             }
 
-            int pIndex = int.Parse(Console.ReadLine());
-
-            Console.WriteLine("Escolha um evento:");
+            int pIndex = int.Parse(Console.ReadLine() ?? "0");
 
             var eventos = eventoService.ObterEventos();
-
+            Console.WriteLine("Escolha um evento:");
             for (int i = 0; i < eventos.Count; i++)
             {
-                Console.WriteLine($"{i} - {eventos[i].Titulo}");
+                Console.WriteLine($"{i} - {eventos[i].Nome}");
             }
 
-            int eIndex = int.Parse(Console.ReadLine());
+            int eIndex = int.Parse(Console.ReadLine() ?? "0");
 
-            certificadoService.GerarCertificado(participantes[pIndex], eventos[eIndex]);
+            var cert = certificadoService.GerarCertificado(participantes[pIndex], eventos[eIndex]);
+            Console.WriteLine($"Certificado gerado: ID {cert.Id}");
         }
     }
 }
