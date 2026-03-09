@@ -1,27 +1,23 @@
-using System;
-using System.IO;
+using System.Collections.Generic;
+using PIMEventosTI.Models;
 
-public class CertificadoService
+namespace PIMEventosTI.Services
 {
-    public void GerarCertificado(Usuario usuario, Evento evento)
+    public class CertificadoService
     {
-        try
+        private List<Certificado> certificados = new List<Certificado>();
+        private int nextId = 1;
+
+        public Certificado GerarCertificado(Participante participante, Evento evento)
         {
-            string nomeArquivo = $"certificado_{usuario.Nome}.txt";
-
-            string conteudo = $"Certificado de Participação\n\n" +
-                              $"Participante: {usuario.Nome}\n" +
-                              $"Evento: {evento.Titulo}\n" +
-                              $"Data: {evento.Data}\n\n" +
-                              $"A organização certifica a participação no evento.";
-
-            File.WriteAllText(nomeArquivo, conteudo);
-
-            Console.WriteLine("Certificado gerado: " + nomeArquivo);
+            var certificado = new Certificado(nextId++, participante, evento);
+            certificados.Add(certificado);
+            return certificado;
         }
-        catch (Exception ex)
+
+        public List<Certificado> ObterCertificados()
         {
-            Console.WriteLine("Erro ao gerar certificado: " + ex.Message);
+            return certificados;
         }
     }
 }
