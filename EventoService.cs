@@ -1,45 +1,28 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using PIMEventosTI.Models;
 
-public class EventoService
+namespace PIMEventosTI.Services
 {
-    private List<Evento> eventos = new List<Evento>();
-
-    public void CriarEvento(Evento evento)
+    public class EventoService
     {
-        eventos.Add(evento);
-        Console.WriteLine("Evento criado com sucesso!");
-    }
+        private List<Evento> eventos = new List<Evento>();
+        private int nextId = 1;
 
-    public void ListarEventos()
-    {
-        Console.WriteLine("\nLista de Eventos:");
-
-        foreach (var evento in eventos)
+        public void CriarEvento(Evento evento)
         {
-            Console.WriteLine($"{evento.Titulo} - {evento.Data} - {evento.Local}");
+            eventos.Add(evento);
         }
-    }
 
-    public Evento BuscarEvento(string titulo)
-    {
-        return eventos.FirstOrDefault(e => e.Titulo == titulo);
-    }
-
-    public void SalvarEventos()
-    {
-        try
+        public List<Evento> ObterEventos()
         {
-            File.WriteAllLines("eventos.txt",
-                eventos.Select(e => $"{e.Titulo};{e.Descricao};{e.Data};{e.Local}"));
+            return eventos;
+        }
 
-            Console.WriteLine("Eventos salvos em arquivo.");
-        }
-        catch (Exception ex)
+        public Evento? BuscarEvento(int id)
         {
-            Console.WriteLine("Erro ao salvar eventos: " + ex.Message);
+            return eventos.Find(e => e.Id == id);
         }
+
+        public int NextId() => nextId++;
     }
 }
