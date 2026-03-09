@@ -1,33 +1,28 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using PIMEventosTI.Models;
 
-public class InscricaoService
+namespace PIMEventosTI.Services
 {
-    private List<Inscricao> inscricoes = new List<Inscricao>();
-
-    public void RegistrarInscricao(Usuario usuario, Evento evento)
+    public class InscricaoService
     {
-        Inscricao nova = new Inscricao(usuario, evento);
-        inscricoes.Add(nova);
+        private List<Inscricao> inscricoes = new List<Inscricao>();
+        private int nextId = 1;
 
-        Console.WriteLine("Inscrição realizada com sucesso!");
-    }
-
-    public void ListarInscricoes()
-    {
-        Console.WriteLine("\nLista de Inscrições:");
-
-        foreach (var i in inscricoes)
+        public void RegistrarInscricao(Participante participante, Evento evento)
         {
-            Console.WriteLine($"{i.Usuario.Nome} inscrito em {i.Evento.Titulo}");
+            Inscricao nova = new Inscricao(nextId++, participante, evento);
+            inscricoes.Add(nova);
         }
-    }
 
-    public List<Inscricao> BuscarPorEvento(string tituloEvento)
-    {
-        return inscricoes
-            .Where(i => i.Evento.Titulo == tituloEvento)
-            .ToList();
+        public List<Inscricao> ObterInscricoes()
+        {
+            return inscricoes;
+        }
+
+        public List<Inscricao> BuscarPorEvento(int eventoId)
+        {
+            return inscricoes.Where(i => i.Evento.Id == eventoId).ToList();
+        }
     }
 }
