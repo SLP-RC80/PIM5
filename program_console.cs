@@ -5,7 +5,7 @@ using PIMEventosTI.Services;
 
 namespace PIMEventosTI
 {
-    class Program
+    public class ProgramConsole
     {
         static EventoService eventoService = new EventoService();
         static InscricaoService inscricaoService = new InscricaoService();
@@ -13,7 +13,7 @@ namespace PIMEventosTI
 
         static List<Participante> participantes = new List<Participante>();
 
-        static void Main(string[] args)
+        public static void RunConsole()
         {
             Console.WriteLine("=================================");
             Console.WriteLine("Sistema de Eventos Acadêmicos TI");
